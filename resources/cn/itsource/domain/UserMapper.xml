@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper配置
+    namespace：命名空间
+                包名+接口名字 (UserMapper.class)
+                PersonMapper
+                程序里面通过这个命名的名字 来找到对于的 下面select insert。。
+
+                cn.itsource.mybatis.ProductMapper.getOne
+-->
+<mapper namespace="cn.itsource.mybatis.UserMapper">
+    <!-- parameterType 参数类型  long 内置别名 java.lang.Long-->
+    <select id="getOne" parameterType="long"
+                     resultType="cn.itsource.mybatis.User" >
+        select * from t_user where id=#{id}
+    </select>
+
+    <!--$它是类里面xxx属性，比如  ${id} 找到 类里面的getId这个属性-->
+    <select id="getOne1" parameterType="UserQuery"
+            resultType="cn.itsource.mybatis.User" >
+        select * from t_user where name='${name}'
+    </select>
+    
+    <!-- 批量删除
+            delete from t_user where id in (1,2,3)
+            batchDelete(List list) [1，2,3]
+    -->
+    <delete id="batchDelete" parameterType="list">
+        delete from t_user where id in
+        <!-- collection 上面的集合 id 每次循环变量  separator 分割符
+            ( 1,2,3)
+         -->
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+              #{id}
+        </foreach>
+    </delete>
+
+    <!--批量新增
+        insert into t_user(name) values ('xxx1'), ('xxx2'), ('xxx3')
+        collection 相当于map 里面key
+        {"namesList",list}
+         (#{name}), (#{name}), (#{name})
+    -->
+    <insert id="batchInsert" parameterType="map">
+         insert into t_user(name) values
+         <foreach collection="namesList" item="name" separator=",">
+             (#{name})
+         </foreach>
+    </insert>
+
+    <!-- 批量修改
+            update t_user set name =#{name} where id in （1,2,3）
+            HashMap map = new HashMap();
+            map.put("name","hanghang");
+            map.put("ids",list);
+            1  name = xxx
+            2 name == yy
+    -->
+    <update id="batchUpdate" parameterType="map">
+          update t_user set name =#{name} where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--List<User> getAll()-->
+    <select id="getAll" resultType="cn.itsource.mybatis.User">
+         select * from t_user
+    </select>
+    <!-- 新增数据
+            useGeneratedKeys：得到主键
+            keyColumn：数据库主键列
+            keyProperty：Java对象里面的主键字段
+
+            如果别名配置包的形式 写法写成 user 或者User  规范
+
+    -->
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
+    parameterType="user">
+        insert into t_user(name) values(#{name})
+    </insert>
+    <!-- 修改方法-->
+    <update id="update" parameterType="cn.itsource.mybatis.User">
+        update t_user set name=#{name} where id=#{id}
+    </update>
+    <!-- 删除-->
+    <delete id="delete" parameterType="long">
+        delete from t_user where id=#{idsss}
+    </delete>
+
+    <!-- 高级查询的
+        id name
+    -->
+    <select id="queryByCondition" parameterType="UserQuery" resultType="user">
+          select * from t_user
+          <include refid="whereSql"></include>
+    </select>
+
+    <sql id="whereSql">
+        <where>
+            <if test="id != null  ">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != '' ">
+                and name = #{name}
+            </if>
+        </where>
+    </sql>
+</mapper>

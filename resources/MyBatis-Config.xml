@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--引入jdbc.propeties文件-->
+    <properties resource="jdbc.properties" />
+    <!--配置别名-->
+    <typeAliases>
+            <!--单独针对类配置别名-->
+            <!--<typeAlias type="cn.itsource.mybatis.User" alias="user"></typeAlias>-->
+             <!--配置包名-->
+                <package name="cn.itsource.mybatis"></package>
+    </typeAliases>
+    <!--配置环境environments development开发环境-->
+    <environments default="development">
+
+        <!-- 配置环境-->
+        <environment id="development">
+            <!--
+                事务管理   type:JDBC(支持事务)/MANAGED(什么都不做)
+            -->
+            <transactionManager type="JDBC" />
+            <!-- 数据源, 连接池  type(POOLED):MyBatis自带的连接池 -->
+            <dataSource type="POOLED">
+                <!-- 连接数据库的参数 -->
+                <property name="driver" value="${driver}" />
+                <property name="url" value="${url}" />
+                <property name="username" value="${username}" />
+                <property name="password" value="${password}" />
+            </dataSource>
+        </environment>
+
+
+    </environments>
+    <!-- 这个mappers代表的是相应的ORM映射文件  sql-->
+    <mappers>
+    <mapper resource="cn/itsource/domain/UserMapper.xml" />
+</mappers>
+
+</configuration>
